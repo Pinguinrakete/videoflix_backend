@@ -27,11 +27,22 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-42kbpc*bn9cb9jm=7r5%yr+c*3=s(ec=%ph_h7@(tgkj+hb86(')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    default=(
+        'django-insecure-42kbpc*bn9cb9jm=7r5%yr+c*3=s(ec=%ph_h7@(tgkj+hb86('
+        ),
+    )
 DEBUG = os.getenv("DEBUG", "False").upper() == "TRUE"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", default="localhost"
+    ).split(",")
+
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    default="http://localhost:4200"
+    ).split(",")
 
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5500", "http://localhost:5500"]
 
@@ -43,7 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django_rq', 
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +93,8 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME", default="videoflix_db"),
         "USER": os.environ.get("DB_USER", default="videoflix_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", default="supersecretpassword"),
+        "PASSWORD": os.environ.get(
+            "DB_PASSWORD", default="supersecretpassword"),
         "HOST": os.environ.get("DB_HOST", default="db"),
         "PORT": os.environ.get("DB_PORT", default=5432)
     }
@@ -91,7 +103,10 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get("REDIS_LOCATION", default="redis://redis:6379/1"),
+        "LOCATION": os.environ.get(
+            "REDIS_LOCATION",
+            default="redis://redis:6379/1"
+            ),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         },
