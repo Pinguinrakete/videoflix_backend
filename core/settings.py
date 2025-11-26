@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from datetime import timedelta
+from pathlib import Path
 from dotenv import load_dotenv
 
 
@@ -54,7 +55,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     'django_rq',
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -173,6 +176,26 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Configure DRF to use JWT authentication by default.
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
+# Configuration for Simple JWT authentication.
+# - ACCESS_TOKEN_LIFETIME: Access tokens expire after 10 minutes.
+# - REFRESH_TOKEN_LIFETIME: Refresh tokens expire after 1 day.
+# - BLACKLIST_AFTER_ROTATION: Blacklist refresh tokens after use.
+# - UPDATE_LAST_LOGIN: Update user's last login timestamp on token refresh.
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
