@@ -1,8 +1,9 @@
 from .permissions import IsOwner, CookieJWTAuthentication
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -53,7 +54,47 @@ class LogoutView(APIView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
-    pass
+    """
+    Refreshes the user's access token using the refresh token from cookies.
+
+    Validates the refresh token, issues a new access token,
+    and updates the access cookie.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        refresh = request.COOKIES.get("refresh_token")
+        serializer = self.get_serializer(data={"refresh": refresh})
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except (ValidationError, TokenError):
+            return Response(
+                {"detail": "Refresh token invalid!"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        access = serializer.validated_data.get("access")
+
+        response = Response(
+            {
+                "message": "Token refreshed",
+                "access": access,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+        response.set_cookie(
+            key="access_token",
+            value=str(access),
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=10 * 60,
+        )
+
+        return response
 
 
 class PasswordResetView(APIView):
