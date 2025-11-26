@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "rest_framework",
     'django_rq',
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 MIDDLEWARE = [
@@ -191,7 +192,7 @@ REST_FRAMEWORK = {
 # - UPDATE_LAST_LOGIN: Update user's last login timestamp on token refresh.
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=25),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
