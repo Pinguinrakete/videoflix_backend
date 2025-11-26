@@ -10,21 +10,22 @@ class ActivateAccountView(APIView):
     pass
 
 
-class ResetPasswordView(APIView):
-    pass
-
-
-class ChangePasswordView(APIView):
-    pass
-
-
 class CookieTokenObtainPairView(TokenObtainPairView):
     pass
+
+
+class LogoutView(APIView):
+    pass  
 
 
 class CookieTokenRefreshView(TokenRefreshView):
     pass
 
 
-class LogoutView(APIView):
-    pass  
+class PasswordResetView(APIView):
+    pass
+
+
+class PasswordResetConfirmView(APIView):
+    pass
+
