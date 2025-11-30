@@ -1,7 +1,8 @@
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -27,20 +28,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def save(self):
-        pw = self.validated_data["password"]
-
-        account = User(
-            email=self.validated_data["email"]
+        user = User(
+            email=self.validated_data["email"],
         )
-        account.set_password(pw)
-        account.save()
-        return account
+        user.set_password(self.validated_data["password"])
+        user.save()
+        return user
 
 
 class CookieTokenObtainPairSerializer(TokenObtainPairSerializer):
     email = serializers.CharField(write_only=True, required=True)
     password = serializers.CharField(
-        write_only=True, required=True, style={"input_type": "password"}
+        write_only=True,
+        required=True,
+        style={"input_type": "password"}
     )
 
     def validate(self, attrs):
@@ -52,12 +53,17 @@ class CookieTokenObtainPairSerializer(TokenObtainPairSerializer):
                 "Both fields must be filled out."
                 )
 
-        email = authenticate(email=email, password=password)
-        if email is None:
+        user = authenticate(
+            request=self.context.get("request"),
+            email=email,
+            password=password
+        )
+
+        if user is None:
             raise serializers.ValidationError(
                 "Invalid email or password."
                 )
 
-        attrs["email"] = email
+        attrs["user"] = user
 
-        return attrs
+        return super().validate(attrs)

@@ -49,6 +49,7 @@ CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5500", "http://localhost:5500"]
 
 INSTALLED_APPS = [
     "corsheaders",
+    "auth_app",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -60,6 +61,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
 ]
+
+AUTH_USER_MODEL = "auth_app.CustomUser"
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -79,8 +82,6 @@ SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-
-AUTH_USER_MODEL = "users.CustomUser"
 
 TEMPLATES = [
     {
@@ -191,6 +192,10 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Configuration for Simple JWT authentication.
 # - ACCESS_TOKEN_LIFETIME: Access tokens expire after 10 minutes.
