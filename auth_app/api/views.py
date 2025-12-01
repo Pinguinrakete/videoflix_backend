@@ -1,4 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import get_user_model
 from .permissions import IsOwner, CookieJWTAuthentication
 from .serializers import RegisterSerializer
 from rest_framework import status
@@ -48,7 +49,30 @@ class RegisterView(APIView):
 
 
 class ActivateAccountView(APIView):
-    pass
+    """
+    Activates a user account using the provided activation token.
+    """
+    def get(self, request, uid, token):
+        User = get_user_model()
+        try:
+            user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Invalid user ID."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        if default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response(
+                {"detail": "Account activated successfully."},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"detail": "Invalid or expired token."},
+            status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
