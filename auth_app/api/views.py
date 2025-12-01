@@ -1,3 +1,4 @@
+from django.contrib.auth.tokens import default_token_generator
 from .permissions import IsOwner, CookieJWTAuthentication
 from .serializers import RegisterSerializer
 from rest_framework import status
@@ -17,18 +18,30 @@ class RegisterView(APIView):
     or validation errors otherwise.
     """
 
-    authentication_classes = [JWTAuthentication]
+    # authentication_classes = [JWTAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save()
+            saved_account = serializer.save(is_active=False)
+            activation_token = default_token_generator.make_token(saved_account)
+
+            #E-Mail an User senden
+            activation_url = f"{FRONTEND_URL}/activate/{saved_account.pk}/{activation_token}"
+            send_activation_email(saved_account.email, activation_url)
+
+            data = {
+                "user": {
+                    "id": saved_account.id,
+                    "email": saved_account.email
+                },
+                "token": activation_token
+            }
 
             return Response(
-                {"detail": "User created successfully!"},
-                status=status.HTTP_201_CREATED
+                data, status=status.HTTP_201_CREATED
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

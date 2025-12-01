@@ -64,6 +64,8 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = "auth_app.CustomUser"
 
+FRONTEND_URL = "https://.com"
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -205,9 +207,11 @@ AUTHENTICATION_BACKENDS = [
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=25),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "Rotate_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 # Static files (CSS, JavaScript, Images)
