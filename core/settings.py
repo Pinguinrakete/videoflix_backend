@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,28 +28,16 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    'SECRET_KEY',
-    default=(
-        'django-insecure-42kbpc*bn9cb9jm=7r5%yr+c*3=s(ec=%ph_h7@(tgkj+hb86('
-        ),
-    )
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 DEBUG = os.getenv("DEBUG", "False").upper() == "TRUE"
 
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", default="localhost"
-    ).split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS",
-    default="http://localhost:4200"
-    ).split(",")
-
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5500", "http://localhost:5500"]
+# Application definition
 
 INSTALLED_APPS = [
     "corsheaders",
-    "auth_app",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -57,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "auth_app",
     'django_rq',
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
@@ -68,22 +57,55 @@ FRONTEND_URL = "http://127.0.0.1:5500/pages/auth/login.html"
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "core.urls"
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PATCH',
+    'DELETE',
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
+
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    default="http://localhost:5500"
+    ).split(",")
 
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -171,9 +193,6 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Internationalization
@@ -213,11 +232,6 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
