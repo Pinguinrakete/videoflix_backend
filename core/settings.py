@@ -64,7 +64,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = "auth_app.CustomUser"
 
-FRONTEND_URL = "https://.com"
+FRONTEND_URL = "http://127.0.0.1:5500/pages/auth/login.html"
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
+from .utils import send_activation_email
 from django.contrib.auth import get_user_model
 from .permissions import IsOwner, CookieJWTAuthentication
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, CookieTokenObtainPairSerializer
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -30,7 +32,7 @@ class RegisterView(APIView):
             activation_token = default_token_generator.make_token(saved_account)
 
             #E-Mail an User senden
-            activation_url = f"{FRONTEND_URL}/activate/{saved_account.pk}/{activation_token}"
+            activation_url = f"{settings.FRONTEND_URL}/activate/{saved_account.pk}/{activation_token}"
             send_activation_email(saved_account.email, activation_url)
 
             data = {
@@ -58,7 +60,8 @@ class ActivateAccountView(APIView):
             user = User.objects.get(pk=uid)
         except User.DoesNotExist:
             return Response(
-                {"detail": "Invalid user ID."},
+                {"detail": "Invalid user ID."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
@@ -66,17 +69,69 @@ class ActivateAccountView(APIView):
             user.is_active = True
             user.save()
             return Response(
-                {"detail": "Account activated successfully."},
+                {"detail": "Account activated successfully."
+                },
                 status=status.HTTP_200_OK,
             )
         return Response(
-            {"detail": "Invalid or expired token."},
+            {"detail": "Invalid or expired token."
+            },
             status=status.HTTP_400_BAD_REQUEST
             )
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
-    pass
+    """
+    Handle user login and set JWT cookies.
+
+    On success, returns user details and sets access/refresh tokens
+    as HTTP-only cookies. Returns 401 if authentication fails.
+    """
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = CookieTokenObtainPairSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.validated_data["user"]
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+
+            response = Response(
+                {
+                    "detail": "Login successfully!",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            response.set_cookie(
+                key="access_token",
+                value=str(access),
+                httponly=True,
+                secure=True,
+                samesite="Lax",
+                max_age=10 * 60,
+            )
+
+            response.set_cookie(
+                key="refresh_token",
+                value=str(refresh),
+                httponly=True,
+                secure=True,
+                samesite="Lax",
+                max_age=24 * 60 * 60,
+            )
+
+            return response
+
+        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(APIView):
