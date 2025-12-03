@@ -28,12 +28,12 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
-            saved_account = serializer.save(is_active=False)
+            saved_account = serializer.save()
             activation_token = default_token_generator.make_token(saved_account)
 
             #E-Mail an User senden
-            activation_url = f"{settings.FRONTEND_URL}/activate/{saved_account.pk}/{activation_token}"
-            send_activation_email(saved_account.email, activation_url)
+            # activation_url = f"{settings.FRONTEND_URL}/activate/{saved_account.pk}/{activation_token}"
+            # send_activation_email(saved_account.email, activation_url)
 
             data = {
                 "user": {

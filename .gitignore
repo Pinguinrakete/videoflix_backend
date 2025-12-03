@@ -16,6 +16,9 @@ env/
 # Environment variables
 .env
 
+#local database
+db.sqlite3
+
 # Media files
 media/
 
