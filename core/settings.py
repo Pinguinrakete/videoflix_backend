@@ -16,9 +16,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Set ENVIRONMENT automatically based on DEBUG variable
-ENVIRONMENT = "development" if os.getenv("DEBUG", "True").upper() == "TRUE" else "production"
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = BASE_DIR / "media"
@@ -127,25 +124,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
-POSTGRES_LOCALLY = os.environ.get("POSTGRES_LOCALLY", "False") == "True"
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME", default="videoflix_db"),
+        "USER": os.environ.get("DB_USER", default="videoflix_user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", default="supersecretpassword"),
+        "HOST": os.environ.get("DB_HOST", default="db"),
+        "PORT": os.environ.get("DB_PORT", default=5432)
     }
 }
-
-if ENVIRONMENT == "production" or POSTGRES_LOCALLY:
-    DATABASES["default"] = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "videoflix_db"),
-        "USER": os.environ.get("DB_USER", "videoflix_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "supersecretpassword"),
-        "HOST": os.environ.get("DB_HOST", "db"),
-        "PORT": os.environ.get("DB_PORT", 5432),
-    }
 
 CACHES = {
     "default": {
@@ -248,3 +236,4 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

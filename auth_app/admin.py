@@ -5,6 +5,17 @@ from .models import CustomUser
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'is_staff', 'is_active')  # kein username!
-    search_fields = ('email',)
-    ordering = ('email',)
+    list_display = ("email", "is_staff", "is_active", "is_verified")
+    list_filter = ("is_staff", "is_active", "is_verified")
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Permissions", {"fields": ("is_staff", "is_active", "is_verified", "is_superuser", "groups", "user_permissions")}),
+    )
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "password1", "password2", "is_active", "is_staff", "is_verified"),
+        }),
+    )
+    search_fields = ("email",)
+    ordering = ("email",)
