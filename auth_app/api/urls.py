@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import RegisterView, ActivateAccountView, PasswordResetView, LogoutView, CookieTokenObtainPairView, CookieTokenRefreshView, PasswordResetConfirmView
-
+from .views import RegisterView, PasswordResetView, LogoutView, CookieTokenObtainPairView, CookieTokenRefreshView, PasswordResetConfirmView
 
 """
     URL routes for authentication-related API endpoints.
@@ -16,7 +15,7 @@ from .views import RegisterView, ActivateAccountView, PasswordResetView, LogoutV
 """
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
-    path("activate/<str:uidb64>/<str:token>/", ActivateAccountView.as_view(), name="activate_account"),
+    # path("activate/<str:uidb64>/<str:token>/", VerifyEmailView.as_view(), name="verify_email"),
     path("login/", CookieTokenObtainPairView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("token/refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),

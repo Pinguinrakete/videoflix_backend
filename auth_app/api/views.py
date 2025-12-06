@@ -1,7 +1,8 @@
+from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
-from .utils import send_activation_email
-from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from .permissions import IsOwner, CookieJWTAuthentication
 from .serializers import RegisterSerializer, CookieTokenObtainPairSerializer
 from rest_framework import status
@@ -11,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import reverse
 
 
 class RegisterView(APIView):
@@ -28,56 +30,45 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
-            saved_account = serializer.save()
-            activation_token = default_token_generator.make_token(saved_account)
+            user = serializer.save()
 
-            #E-Mail an User senden
-            # activation_url = f"{settings.FRONTEND_URL}/activate/{saved_account.pk}/{activation_token}"
-            # send_activation_email(saved_account.email, activation_url)
+            # UID & Token erzeugen
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            activation_token = default_token_generator.make_token(user)
 
-            data = {
-                "user": {
-                    "id": saved_account.id,
-                    "email": saved_account.email
-                },
-                "token": activation_token
-            }
+            # Verifikationslink erstellen
+            # verification_url = request.build_absolute_uri(
+            #     reverse('verify_email', kwargs={'uidb64': uid, 'token': activation_token})
+            # )
 
+            # E-Mail senden
+            try:
+                send_mail(
+                    subject='Verify your account',
+                    message=f'Please click the link to verify your account: click mich',
+                    # message=f'Please click the link to verify your account: {verification_url}',
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[user.email],
+                )
+            except Exception as e:
+                return Response(
+                    {"error": "Email could not be sent", "details": str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+            # Sicherheits-Response (Token NICHT zurückgeben!)
             return Response(
-                data, status=status.HTTP_201_CREATED
+                {
+                    "user": {
+                        "id": user.id,
+                        "email": user.email
+                    },
+                    "message": "Account created. Please check your email to verify your account."
+                },
+                status=status.HTTP_201_CREATED
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ActivateAccountView(APIView):
-    """
-    Activates a user account using the provided activation token.
-    """
-    def get(self, request, uid, token):
-        User = get_user_model()
-        try:
-            user = User.objects.get(pk=uid)
-        except User.DoesNotExist:
-            return Response(
-                {"detail": "Invalid user ID."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        
-        if default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return Response(
-                {"detail": "Account activated successfully."
-                },
-                status=status.HTTP_200_OK,
-            )
-        return Response(
-            {"detail": "Invalid or expired token."
-            },
-            status=status.HTTP_400_BAD_REQUEST
-            )
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):

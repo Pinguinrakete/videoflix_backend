@@ -53,6 +53,10 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = "auth_app.CustomUser"
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 FRONTEND_URL = "http://127.0.0.1:5500/pages/auth/login.html"
 
 MIDDLEWARE = [
@@ -213,15 +217,16 @@ REST_FRAMEWORK = {
     )
 }
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-]
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Configuration for Simple JWT authentication.
-# - ACCESS_TOKEN_LIFETIME: Access tokens expire after 10 minutes.
-# - REFRESH_TOKEN_LIFETIME: Refresh tokens expire after 1 day.
-# - BLACKLIST_AFTER_ROTATION: Blacklist refresh tokens after use.
-# - UPDATE_LAST_LOGIN: Update user's last login timestamp on token refresh.
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS") == "True"
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL") == "True"
+
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=25),
@@ -236,4 +241,3 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
