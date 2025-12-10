@@ -1,4 +1,5 @@
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
@@ -36,33 +37,48 @@ class RegisterView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             activation_token = default_token_generator.make_token(user)
 
-            # Verifikationslink erstellen
-            # verification_url = request.build_absolute_uri(
-            #     reverse('verify_email', kwargs={'uidb64': uid, 'token': activation_token})
-            # )
-
             # E-Mail senden
             try:
-                send_mail(
-                    subject='Verify your account',
-                    message=f'Please click the link to verify your account: click mich',
-                    # message=f'Please click the link to verify your account: {verification_url}',
+                html_content = """
+                    <div style="width:850px;">    
+                        <div style="display:flex; justify-content:center;">
+                            <img src="/assets/image/videoflix.png" alt="Videoflix" style="width:300px; height: 50px;">
+                        </div>
+                        <p>Dear,<br><br>
+                        Thank you for registering with <span style="color:blue;">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
+                        <div style="display:flex; justify-content:flex-start;border-radius:25px; padding:0;">
+                            <img src="/assets/image/activate_account.png" alt="Activate Account" style="width:200px; height: 50px; border-radius:25px; cursor:pointer;">
+                        </div>
+                        <p>If you did not create an account with us, please disregard this email.</p>
+
+                        <p>Best regards,</p>
+
+                        <p>Your Videoflix Team.</p>
+                    </div>
+                """
+
+                email = EmailMultiAlternatives(
+                    subject = "Confirm your email",
+                    body="Please use an HTML capable email client.",  # Pflicht-Plaintext
                     from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[user.email],
+                    to=[user.email],
                 )
+
+                email.attach_alternative(html_content, "text/html")
+                email.send()
             except Exception as e:
                 return Response(
                     {"error": "Email could not be sent", "details": str(e)},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
 
-            # Sicherheits-Response (Token NICHT zurückgeben!)
             return Response(
                 {
                     "user": {
                         "id": user.id,
                         "email": user.email
                     },
+                    "token": activation_token,
                     "message": "Account created. Please check your email to verify your account."
                 },
                 status=status.HTTP_201_CREATED
