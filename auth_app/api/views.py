@@ -1,4 +1,3 @@
-# from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
@@ -24,7 +23,6 @@ class RegisterView(APIView):
     or validation errors otherwise.
     """
 
-    # authentication_classes = [JWTAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -33,11 +31,13 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
 
-            # UID & Token erzeugen
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             activation_token = default_token_generator.make_token(user)
 
-            # E-Mail senden
+            activation_path = reverse('auth_app:activate', kwargs={'uidb64': uid, 'token': activation_token})
+
+            activation_url = f'http://127.0.0.1:5500/pages/auth/activate.html?uid={uid}&token={activation_token}'
+
             try:
                 html_content = """
                     <div style="width:850px;">    
@@ -79,12 +79,15 @@ class RegisterView(APIView):
                         "email": user.email
                     },
                     "token": activation_token,
-                    "message": "Account created. Please check your email to verify your account."
                 },
                 status=status.HTTP_201_CREATED
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActivationView(APIView):
+    pass
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
