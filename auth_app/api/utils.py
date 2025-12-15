@@ -15,12 +15,40 @@ def send_activation_email(user_email, activation_url):
 
             <p>Best regards,</p>
 
-            <p>Your Videoflix Team.</p>
+            <p>Your Videoflix Team</p>
         </div>
     """
 
     email = EmailMultiAlternatives(
         subject="Confirm your email",
+        body="Please use an HTML-capable email client.",
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user_email],
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
+
+
+def send_reset_password_email(user_email, reset_pw_url):
+    html_content = f"""
+        <div style="width:500px; font-size:18px; font-family:Arial, Helvetica, sans-serif">    
+            <p>Hello videoflix user,<br><br>
+            We recently received a request to reset your password. If you made this request, please click on the following link to reset your password:</p>
+
+            <a href="{reset_pw_url}" style="text-decoration:none;"><b>https://videoflix.de/site/resetPassword</b></a>
+
+            <p>Please note that for security reasons, this link is only valid für 24 hours.</p>
+
+            <p>If you did not request a password reset, please ignore this email.</p>
+
+            <p>Best regards,</p>
+
+            <p>Your Videoflix Team</p>
+        </div>
+    """
+
+    email = EmailMultiAlternatives(
+        subject="Reset your Password",
         body="Please use an HTML-capable email client.",
         from_email=settings.EMAIL_HOST_USER,
         to=[user_email],
