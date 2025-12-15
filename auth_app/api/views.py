@@ -1,10 +1,10 @@
-from .utils import send_activation_email
+from .utils import send_activation_email, send_reset_password_email
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from .permissions import IsOwner, CookieJWTAuthentication
-from .serializers import RegisterSerializer, CookieTokenObtainPairSerializer
+from .serializers import RegisterSerializer, CookieTokenObtainPairSerializer, PasswordResetSerializer
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -35,7 +35,7 @@ class RegisterView(APIView):
             activation_token = default_token_generator.make_token(user)
 
             activation_url = (
-                f'http://127.0.0.1:5500/pages/auth/activate.html'
+                f'http://127.0.0.1:5500/api/activate.html'
                 f'?uid={uid}&token={activation_token}'
             )
 
@@ -195,7 +195,46 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 
 class PasswordResetView(APIView):
-    pass
+    """
+    Initiate a password reset for a user.
+
+    Sends a password reset email if the provided data is valid,
+    otherwise returns validation errors.
+    """
+    
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+
+            user = user.email 
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_token = default_token_generator.make_token(user)
+
+            reset_pw_url = (
+                f'http://127.0.0.1:5500/api/password_confirm.html'
+                f'?uid={uid}&token={reset_token}'
+            )
+
+            django_rq.get_queue('default').enqueue(
+                send_reset_password_email,
+                user.email,
+                reset_pw_url
+            )
+
+            return Response(
+                {
+                    "detail": "An email has been sent to reset your password."
+                },
+                status=status.HTTP_200_OK
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class PasswordResetConfirmView(APIView):

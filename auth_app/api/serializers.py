@@ -67,3 +67,13 @@ class CookieTokenObtainPairSerializer(TokenObtainPairSerializer):
         attrs["user"] = user
 
         return super().validate(attrs)
+    
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Invalid credentials.")
+        return value
+        
