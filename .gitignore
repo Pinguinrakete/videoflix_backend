@@ -16,6 +16,9 @@ env/
 # Environment variables
 .env
 
+# static files
+static/
+
 #local database
 db.sqlite3
 

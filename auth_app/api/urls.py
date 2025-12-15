@@ -12,6 +12,9 @@ from .views import RegisterView, ActivationView, CookieTokenObtainPairView, Logo
     - Refreshing access tokens via refresh cookie
     - Password reset request and confirmation
 """
+
+app_name = 'auth_app'
+
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path("activate/<uidb64>/<token>/", ActivationView.as_view(), name="activation_via_email"),
