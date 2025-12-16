@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -36,37 +36,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class CookieTokenObtainPairSerializer(TokenObtainPairSerializer):
-    email = serializers.CharField(write_only=True, required=True)
+class CookieTokenObtainPairSerializer(serializers.Serializer):
+    email = serializers.CharField(required=True)
     password = serializers.CharField(
         write_only=True,
         required=True,
-        style={"input_type": "password"}
     )
 
     def validate(self, attrs):
-        email = attrs.get("email")
-        password = attrs.get("password")
-
-        if not email or not password:
-            raise serializers.ValidationError(
-                "Both fields must be filled out."
-                )
+        email = attrs["email"]
+        password = attrs["password"]
 
         user = authenticate(
             request=self.context.get("request"),
-            email=email,
+            username=email,
             password=password
         )
 
-        if user is None:
-            raise serializers.ValidationError(
-                "Invalid email or password."
-                )
+        if not user:
+            raise serializers.ValidationError("Invalid email or password.")
 
-        attrs["user"] = user
+        if not user.is_active or not user.is_verified:
+            raise serializers.ValidationError("Account is not active.")
 
-        return super().validate(attrs)
+        return {"user": user}
     
 
 class PasswordResetSerializer(serializers.Serializer):

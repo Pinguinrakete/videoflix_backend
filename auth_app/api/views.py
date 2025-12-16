@@ -119,7 +119,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     as HTTP-only cookies. Returns 401 if authentication fails.
     """
 
-    authentication_classes = [JWTAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -135,8 +134,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                     "detail": "Login successfully!",
                     "user": {
                         "id": user.id,
-                        "username": user.username,
-                        "email": user.email,
+                        "username": user.email,
                     },
                 },
                 status=status.HTTP_200_OK,
@@ -146,8 +144,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 key="access_token",
                 value=str(access),
                 httponly=True,
-                secure=True,
-                samesite="Lax",
+                secure=False,
+                samesite="None",
                 max_age=10 * 60,
             )
 
@@ -155,8 +153,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 key="refresh_token",
                 value=str(refresh),
                 httponly=True,
-                secure=True,
-                samesite="Lax",
+                secure=False,
+                samesite="None",
                 max_age=24 * 60 * 60,
             )
 
