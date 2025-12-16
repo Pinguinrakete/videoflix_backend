@@ -73,7 +73,16 @@ class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Invalid credentials.")
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("If the email exists, a reset link will be sent.")
         return value
         
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True)
+    confirmed_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["confirmed_password"]:
+            raise serializers.ValidationError("Passwords do not match")
+        return attrs
