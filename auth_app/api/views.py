@@ -2,6 +2,7 @@ from .utils import send_activation_email, send_reset_password_email
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_str
@@ -36,10 +37,12 @@ class RegisterView(APIView):
             user = serializer.save()
 
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+            print(uid)
             activation_token = default_token_generator.make_token(user)
+            print(activation_token)
 
             activation_url = (
-                f'http://127.0.0.1:5500/api/activate.html'
+                f'http://127.0.0.1:5500/pages/auth/activate.html'
                 f'?uid={uid}&token={activation_token}'
             )
 
@@ -73,23 +76,14 @@ class ActivationView(APIView):
     Returns a success message if activation is successful,
     or an error message if the link is invalid, expired, or already used.
     """
-    
+
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        uidb64 = request.query_params.get("uid")
-        token = request.query_params.get("token")
-                                         
-        if not uidb64 or not token:
-            return Response(
-                {"detail": "Invalid activation link."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+    def get(self, request, uidb64, token):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except (User.DoesNotExist, ValueError, TypeError):
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
             return Response(
                 {"detail": "Invalid user."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -268,7 +262,7 @@ class PasswordResetView(APIView):
             reset_token = default_token_generator.make_token(user)
 
             reset_pw_url = (
-                f'http://127.0.0.1:5500/api/password_confirm.html'
+                f'http://127.0.0.1:5500/pages/auth/confirm_password.html'
                 f'?uid={uid}&token={reset_token}'
             )
 
