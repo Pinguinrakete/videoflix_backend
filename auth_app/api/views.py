@@ -67,7 +67,54 @@ class RegisterView(APIView):
 
 
 class ActivationView(APIView):
-    pass
+    """
+    Activate a user account using a UID and token.
+
+    Returns a success message if activation is successful,
+    or an error message if the link is invalid, expired, or already used.
+    """
+    
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        uidb64 = request.query_params.get("uid")
+        token = request.query_params.get("token")
+                                         
+        if not uidb64 or not token:
+            return Response(
+                {"detail": "Invalid activation link."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"detail": "Invalid user."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"detail": "Invalid or expired activation token."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if user.is_active:
+            return Response(
+                {"detail": "Account already activated."},
+                status=status.HTTP_200_OK
+            )
+
+        user.is_active = True
+        user.is_verified = True
+        user.save()
+
+        return Response(
+            {"detail": "Account successfully activated."},
+            status=status.HTTP_200_OK
+        )
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
@@ -246,6 +293,10 @@ class PasswordResetView(APIView):
 
 
 class PasswordResetConfirmView(APIView):
+    """
+    Reset a user's password using UID and token from a reset link.
+    Returns success or error messages.
+    """
 
     permission_classes = [AllowAny]
 
