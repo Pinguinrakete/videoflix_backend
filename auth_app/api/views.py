@@ -9,10 +9,12 @@ from django.utils.encoding import force_str
 from .permissions import IsOwner, CookieJWTAuthentication
 from .serializers import RegisterSerializer, CookieTokenObtainPairSerializer, PasswordResetSerializer, PasswordResetConfirmSerializer
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 import django_rq
@@ -206,22 +208,29 @@ class CookieTokenRefreshView(TokenRefreshView):
 
     def post(self, request, *args, **kwargs):
         refresh = request.COOKIES.get("refresh_token")
+
+        if not refresh:
+            return Response(
+                {"detail": "Refresh token missing."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = self.get_serializer(data={"refresh": refresh})
 
         try:
             serializer.is_valid(raise_exception=True)
         except (ValidationError, TokenError):
             return Response(
-                {"detail": "Refresh token invalid!"},
+                {"detail": "Invalid refresh token."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        access = serializer.validated_data.get("access")
+        access = serializer.validated_data("access")
 
         response = Response(
             {
-                "message": "Token refreshed",
-                "access": access,
+                "detail": "Token refreshed",
+                "access": str(access),
             },
             status=status.HTTP_200_OK,
         )
@@ -230,7 +239,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             key="access_token",
             value=str(access),
             httponly=True,
-            secure=True,
+            secure=not settings.DEBUG,
             samesite="Lax",
             max_age=10 * 60,
         )
