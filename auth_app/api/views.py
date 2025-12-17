@@ -37,9 +37,7 @@ class RegisterView(APIView):
             user = serializer.save()
 
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            print(uid)
             activation_token = default_token_generator.make_token(user)
-            print(activation_token)
 
             activation_url = (
                 f'http://127.0.0.1:5500/pages/auth/activate.html'
@@ -252,10 +250,10 @@ class PasswordResetView(APIView):
 
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if serializer.is_valid():
-            user = serializer.save()
-
+        user = serializer.user
+        if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             reset_token = default_token_generator.make_token(user)
 
@@ -268,7 +266,7 @@ class PasswordResetView(APIView):
                 send_reset_password_email,
                 user.email,
                 reset_pw_url
-            )
+                )
 
             return Response(
                 {
@@ -283,7 +281,6 @@ class PasswordResetView(APIView):
             )
 
 
-
 class PasswordResetConfirmView(APIView):
     """
     Reset a user's password using UID and token from a reset link.
@@ -293,28 +290,28 @@ class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
-        serializer = PasswordResetConfirmSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
         try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
+            uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
-        except (User.DoesNotExist, ValueError, TypeError):
+        except (TypeError, ValueError, User.DoesNotExist):
             return Response(
-                {"detail": "Invalid reset link."},
+                {"detail": "Invalid link."},
                 status=status.HTTP_400_BAD_REQUEST
-            )
+                )
 
         if not default_token_generator.check_token(user, token):
             return Response(
-                {"detail": "Token invalid or expired."},
+                {"detail": "Invalid or expired token."},
                 status=status.HTTP_400_BAD_REQUEST
-            )
+                )
 
-        user.set_password(serializer.validated_data["password"])
-        user.save(update_fields=["password"])
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
 
         return Response(
-            {"detail": "Password changed successfully."},
+            {"detail": "Your Password has been successfully reset."},
             status=status.HTTP_200_OK
-        )
+            )

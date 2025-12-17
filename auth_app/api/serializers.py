@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
-# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -66,16 +65,16 @@ class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate_email(self, value):
-        if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("If the email exists, a reset link will be sent.")
+        self.user = User.objects.filter(email=value).first()
+
         return value
         
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
-    password = serializers.CharField(write_only=True)
-    confirmed_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
-    def validate(self, attrs):
-        if attrs["password"] != attrs["confirmed_password"]:
+    def validate(self, data):
+        if data["new_password"] != data["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match")
-        return attrs
+        return data
