@@ -1,3 +1,4 @@
+import os
 from content_app.api.tasks import convert_480p
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -21,4 +22,3 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.file:
         if os.path.isfile(instance.video_file.path):
             os.remove(instance.video_file.path)
-        
