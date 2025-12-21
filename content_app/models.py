@@ -10,7 +10,7 @@ class Video(models.Model):
     This model represents a video including its title, description,
     thumbnail URL, category, and creation timestamp.
     """
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(blank=False, max_length=255)
     description = models.TextField(blank=False)
