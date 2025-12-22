@@ -49,4 +49,37 @@ class HLSMasterPlaylistView(APIView):
 
 
 class HLSVideoSegmentView(APIView):
-    pass
+    """
+    Returns a single HLS TS segment for a
+    video at a specific resolution.
+    """
+
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get(self, request, movie_id, resolution, segment):
+        # 1. Video existiert?
+        if not Video.objects.filter(id=movie_id).exists():
+            raise Http404("Video not found")
+
+        # 2. Nur .ts Segmente erlauben (Sicherheit)
+        if not segment.endswith(".ts"):
+            raise Http404("Invalid segment")
+
+        # 3. Segmentpfad
+        segment_path = os.path.join(
+            settings.MEDIA_ROOT,
+            "hls",
+            str(movie_id),
+            resolution,
+            segment,
+        )
+
+        # 4. Segment existiert?
+        if not os.path.exists(segment_path):
+            raise Http404("Segment not found")
+
+        # 5. Segment ausliefern
+        return FileResponse(
+            open(segment_path, "rb"),
+            content_type="video/mp2t",
+        )
