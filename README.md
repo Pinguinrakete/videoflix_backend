@@ -2,7 +2,15 @@
 
 
 ## ![Features Icon](assets/icons/logoheader.png) Description
+Videoflix is a video streaming platform inspired by Netflix. We use djangorestframework_simplejwt for authentication with JWTs. User registration is handled via a RegisterView that requires an email address, password, and password confirmation; the account is only activated after successful email verification.
 
+After logging in, the user receives an access token and a refresh token to securely renew the session. In addition, there is a password reset feature that allows users to reset their password via a link sent by email.
+
+Videos are uploaded through the admin panel and are automatically converted into three different resolutions. Depending on the screen resolution, the optimal video size is delivered to avoid unnecessary bandwidth usage and to ensure efficient playback.
+
+The backend runs in Docker containers and uses PostgreSQL as the database. FFMPEG is used for video transcoding and thumbnail generation, while time-consuming tasks are processed asynchronously using Django RQ with Redis.
+
+A caching layer based on django-redis improves performance, configuration is managed securely via dotenv, static files are served using WhiteNoise, and in production the application runs efficiently with Gunicorn.
 
 
 ## ![Features Icon](assets/icons/gear.png) Features
