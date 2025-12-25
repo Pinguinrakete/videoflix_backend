@@ -1,6 +1,28 @@
 from django.db import models
 
-# from auth_app.models import Account
+
+CATEGORY_CHOICES = {
+    ("drama", "Drama"),
+    ("romance", "Romance"),
+    ("action", "Action"),
+    ("comedy", "Comedy"),
+    ("horror", "Horror"),
+    ("thriller", "Thriller"),
+    ("sci_fi", "Science Fiction"),
+    ("fantasy", "Fantasy"),
+    ("documentary", "Documentary"),
+    ("animation", "Animation"),
+    ("adventure", "Adventure"),
+    ("mystery", "Mystery"),
+    ("crime", "Crime"),
+    ("musical", "Musical"),
+    ("family", "Family"),
+    ("biography", "Biography"),
+    ("history", "History"),
+    ("war", "War"),
+    ("western", "Western"),
+    ("sport", "Sport"),
+}
 
 
 class Video(models.Model):
@@ -14,8 +36,17 @@ class Video(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(blank=False, max_length=255)
     description = models.TextField(blank=False)
-    thumbnail_url = models.TextField(blank=True, default="")
-    category = models.CharField(max_length=255)
+    video = models.FileField(upload_to="videos/")
+    thumbnail = models.ImageField(
+        upload_to="thumbnails/",
+        blank=True,
+        null=True
+        )
+    thumbnail_url = models.TextField(blank=True, null=True, default="")
+    category = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES
+    )
 
     def __str__(self):
         return self.title

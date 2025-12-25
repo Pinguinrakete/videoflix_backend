@@ -57,7 +57,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
+
     def token_is_valid(self):
         return timezone.now() < self.token_created_at + timezone.timedelta(
             hours=24
