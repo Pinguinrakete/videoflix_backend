@@ -5,8 +5,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from auth_app.api.managers import CustomUserManager
-
 
 class CustomUserManager(BaseUserManager):
     """
@@ -61,5 +59,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
     
     def token_is_valid(self):
-        # Token is valid for 24 hours after creation
-        return timezone.now() < self.token_created_at + timezone.timedelta(hours=24)
+        return timezone.now() < self.token_created_at + timezone.timedelta(
+            hours=24
+            )
