@@ -1,10 +1,11 @@
+import django_rq
 import os
 from content_app.api.tasks import convert_480p
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
+from .jobs import create_video_thumbnail_job
 from ..models import Video
-import django_rq
 
 
 @receiver(post_save, sender=Video)
@@ -25,3 +26,15 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.file:
         if os.path.isfile(instance.video_file.path):
             os.remove(instance.video_file.path)
+
+
+@receiver(post_save, sender=Video)
+def enqueue_thumbnail_job(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    if not instance.video:
+        return
+
+    queue = django_rq.get_queue("default")
+    queue.enqueue(create_video_thumbnail_job, instance.id)

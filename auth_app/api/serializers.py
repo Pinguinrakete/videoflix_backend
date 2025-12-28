@@ -36,30 +36,35 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class CookieTokenObtainPairSerializer(serializers.Serializer):
-    email = serializers.CharField(required=True)
-    password = serializers.CharField(
-        write_only=True,
-        required=True,
-    )
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        email = attrs["email"]
-        password = attrs["password"]
+        request = self.context.get("request")
 
         user = authenticate(
-            request=self.context.get("request"),
-            username=email,
-            password=password
+            request=request,
+            username=attrs.get("email"),
+            password=attrs.get("password")
         )
 
         if not user:
-            raise serializers.ValidationError("Invalid email or password.")
+            raise serializers.ValidationError(
+                {"detail": "Invalid email or password."}
+                )
 
-        if not user.is_active or not user.is_verified:
-            raise serializers.ValidationError("Account is not active.")
+        if not user.is_active:
+            raise serializers.ValidationError(
+                {"detail": "Account is disabled."}
+                )
+
+        if not user.is_verified:
+            raise serializers.ValidationError(
+                {"detail": "Email address is not verified."}
+                )
 
         return {"user": user}
-    
+
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
