@@ -17,6 +17,8 @@ services:
     container_name: videoflix_redis
     volumes:
       - redis_data:/data
+    ports:
+      - "6379:6379"
 
   web:
     build:
@@ -24,7 +26,12 @@ services:
       dockerfile: backend.Dockerfile
     env_file: .env
     container_name: videoflix_backend
-
+    command: >
+      gunicorn config.wsgi:application
+      --worker-class gevent
+      --timeout 900
+      --workers 3
+      --bind 0.0.0.0:8000
     volumes:
       - .:/app
       - videoflix_media:/app/media
@@ -37,7 +44,22 @@ services:
       - db
       - redis
 
-
+  rqworker:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    container_name: videoflix_rqworker
+    command: python manage.py rqworker default
+    env_file: .env
+    volumes:
+      - .:/app
+      - videoflix_media:/app/media
+      - videoflix_static:/app/static
+    depends_on:
+      - web
+      - redis
+    environment:
+      - PYTHONUNBUFFERED=1
 
 
 volumes:

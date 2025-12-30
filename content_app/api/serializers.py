@@ -12,4 +12,3 @@ class VideoSerializer(serializers.ModelSerializer):
                   "thumbnail_url",
                   "category"
                   ]
-        read_only_fields = ["video", "thumbnail"]

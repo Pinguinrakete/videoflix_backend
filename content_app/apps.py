@@ -6,4 +6,4 @@ class ContentAppConfig(AppConfig):
     name = "content_app"
 
     def ready(self):
-        import content_app.api.signals
+        from .api import signals

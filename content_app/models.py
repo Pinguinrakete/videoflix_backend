@@ -37,12 +37,7 @@ class Video(models.Model):
     title = models.CharField(blank=False, max_length=255)
     description = models.TextField(blank=False)
     video = models.FileField(upload_to="videos/")
-    thumbnail = models.ImageField(
-        upload_to="thumbnails/",
-        blank=True,
-        null=True
-        )
-    thumbnail_url = models.TextField(blank=True, null=True, default="")
+    thumbnail_url = models.URLField(blank=True)
     category = models.CharField(
         max_length=50,
         choices=CATEGORY_CHOICES

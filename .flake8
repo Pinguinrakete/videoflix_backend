@@ -9,3 +9,7 @@ exclude =
     env/,
     migrations/,
     __pycache__/
+
+# Ignore unused imports only in apps.py
+per-file-ignores =
+    */apps.py:F401
