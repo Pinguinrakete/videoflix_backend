@@ -2,7 +2,7 @@ import os
 from auth_app.api.permissions import CookieJWTAuthentication
 from django.conf import settings
 from django.http import FileResponse, Http404
-from models import Video
+from ..models import Video
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,11 +36,11 @@ class HLSMasterPlaylistView(APIView):
             "hls",
             str(movie_id),
             resolution,
-            "index.m3u8",
+            "master.m3u8",
         )
 
         if not os.path.exists(manifest_path):
-            raise Http404("HLS manifest not found")
+            raise Http404("Master playlist not found")
 
         return FileResponse(
             open(manifest_path, "rb"),

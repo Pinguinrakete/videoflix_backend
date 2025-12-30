@@ -19,6 +19,8 @@ def video_processing_pipeline(video_id):
     for res in ["480p", "720p", "1080p"]:
         convert_to_hls(source, base_dir, res)
 
+    create_master_playlist(base_dir)
+
     thumb_path = Path(
         settings.MEDIA_ROOT
         ) / "thumbnails" / f"video_{video.id}.jpg"
@@ -31,14 +33,18 @@ def video_processing_pipeline(video_id):
 
 
 def create_master_playlist(base_dir):
+    master_dir = base_dir / "master"
+    master_dir.mkdir(exist_ok=True)
     content = """#EXTM3U
 #EXT-X-VERSION:3
+
 #EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=854x480
 480p/index.m3u8
+
 #EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=1280x720
 720p/index.m3u8
+
 #EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1920x1080
 1080p/index.m3u8
 """
-    master = base_dir / "master.m3u8"
-    master.write_text(content)
+    (master_dir / "index.m3u8").write_text(content)

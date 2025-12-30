@@ -15,13 +15,19 @@ from .views import HLSVideoSegmentView
 """
 
 urlpatterns = [
-    path("video/",
-         VideoView.as_view(),
-         name="video"),
-    path("video/<int:movie_id>/<str:resolution/index.m3u8",
-         HLSMasterPlaylistView.as_view(),
-         name="hls_master_playlist"),
-    path("video/<int:movie_id>/<str:resolution/<str:segment>/",
-         HLSVideoSegmentView.as_view(),
-         name="hls_video_segment"),
+    path(
+        "video/",
+        VideoView.as_view(),
+        name="video"
+        ),
+    path(
+        "video/<int:movie_id>/<str:resolution>/index.m3u8",
+        HLSMasterPlaylistView.as_view(),
+        name="hls_master_playlist"
+        ),
+    path(
+        "video/<int:movie_id>/<str:resolution>/<str:segment>/",
+        HLSVideoSegmentView.as_view(),
+        name="hls_video_segment"
+        ),
 ]

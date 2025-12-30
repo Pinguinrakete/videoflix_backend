@@ -4,8 +4,6 @@ set -e
 
 echo "Warte auf PostgreSQL auf $DB_HOST:$DB_PORT..."
 
-# -q für "quiet" (keine Ausgabe außer Fehlern)
-# Die Schleife läuft, solange pg_isready *nicht* erfolgreich ist (Exit-Code != 0)
 while ! pg_isready -h "$DB_HOST" -p "$DB_PORT" -q; do
   echo "PostgreSQL ist nicht erreichbar - schlafe 1 Sekunde"
   sleep 1
@@ -13,14 +11,15 @@ done
 
 echo "PostgreSQL ist bereit - fahre fort..."
 
-# Deine originalen Befehle (ohne wait_for_db)
-python manage.py collectstatic --noinput
-python manage.py makemigrations
-python manage.py migrate
+# Migrationen nur ausführen, wenn RUN_MIGRATIONS=true
+if [ "$RUN_MIGRATIONS" = "true" ]; then
+  echo "Führe Django-Collectstatic, Migrations und Superuser-Erstellung aus..."
 
-# Create a superuser using environment variables
-# (Dein Superuser-Erstellungs-Code bleibt gleich)
-python manage.py shell <<EOF
+  python manage.py collectstatic --noinput
+  python manage.py makemigrations
+  python manage.py migrate
+
+  python manage.py shell <<EOF
 import os
 from django.contrib.auth import get_user_model
 
@@ -35,7 +34,16 @@ if not User.objects.filter(email=email).exists():
 else:
     print(f"Superuser '{email}' already exists.")
 EOF
+fi
 
-python manage.py rqworker default &
+# RQ-Worker nur starten, wenn RUN_WORKER=true
+if [ "$RUN_WORKER" = "true" ]; then
+  echo "Starte RQ-Worker..."
+  exec python manage.py rqworker default
+fi
 
-exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --reload
+# Gunicorn nur starten, wenn nicht Worker
+if [ "$RUN_WORKER" != "true" ]; then
+  echo "Starte Gunicorn..."
+  exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --reload
+fi
