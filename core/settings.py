@@ -20,6 +20,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
+# SITE_URL = "http://example.com" or Developer mode
+SITE_URL = "http://127.0.0.1:8000"
 
 # # Load the .env file
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -33,8 +35,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").upper() == "TRUE"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
-
-# Application definition
 
 INSTALLED_APPS = [
     "corsheaders",

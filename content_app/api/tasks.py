@@ -47,7 +47,7 @@ def convert_to_hls(source, output_dir, resolution):
     return playlist
 
 
-def generate_thumbnail(video_path, thumbnail_path, size=(320, 320)):
+def generate_thumbnail(video_path, thumbnail_path, size=(270, 150)):
     temp_frame = Path(thumbnail_path).with_suffix(".tmp.jpg")
 
     subprocess.run(

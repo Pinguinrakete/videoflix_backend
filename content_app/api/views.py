@@ -36,7 +36,7 @@ class HLSMasterPlaylistView(APIView):
             "hls",
             str(movie_id),
             resolution,
-            "master.m3u8",
+            "index.m3u8",
         )
 
         if not os.path.exists(manifest_path):

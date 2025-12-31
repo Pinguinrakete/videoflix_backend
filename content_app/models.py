@@ -16,6 +16,7 @@ CATEGORY_CHOICES = {
     ("mystery", "Mystery"),
     ("crime", "Crime"),
     ("musical", "Musical"),
+    ("music", "Music"),
     ("family", "Family"),
     ("biography", "Biography"),
     ("history", "History"),

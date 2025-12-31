@@ -3,10 +3,7 @@ from django.conf import settings
 from ..models import Video
 from .tasks import convert_to_hls
 from .tasks import generate_thumbnail
-
-
-def get_thumbnail_path(video_id):
-    return Path(settings.MEDIA_ROOT) / "thumbnails" / f"video_{video_id}.jpg"
+from urllib.parse import urljoin
 
 
 def video_processing_pipeline(video_id):
@@ -23,12 +20,15 @@ def video_processing_pipeline(video_id):
 
     thumb_path = Path(
         settings.MEDIA_ROOT
-        ) / "thumbnails" / f"video_{video.id}.jpg"
+        ) / "thumbnail" / f"image{video.id}.jpg"
     thumb_path.parent.mkdir(parents=True, exist_ok=True)
 
     generate_thumbnail(source, thumb_path)
 
-    video.thumbnail_url = f"{settings.MEDIA_URL}thumbnails/{thumb_path.name}"
+    video.thumbnail_url = urljoin(
+        settings.SITE_URL,
+        f"{settings.MEDIA_URL}thumbnail/{thumb_path.name}"
+    )
     video.save(update_fields=["thumbnail_url"])
 
 
