@@ -1,6 +1,9 @@
+import os
+import shutil
 import subprocess
 from pathlib import Path
 from PIL import Image
+from django.conf import settings
 
 
 def convert_to_hls(source, output_dir, resolution):
@@ -51,10 +54,6 @@ def generate_thumbnail(video_path, thumbnail_path, size=(270, 150)):
     video_path = str(video_path)
     thumbnail_path = Path(thumbnail_path)
 
-    print("RQ: generating thumbnail")
-    print("Source:", video_path)
-    print("Target:", thumbnail_path)
-
     subprocess.run(
         [
             "/usr/bin/ffmpeg",
@@ -77,4 +76,22 @@ def generate_thumbnail(video_path, thumbnail_path, size=(270, 150)):
 
     thumbnail_path.chmod(0o644)
 
-    print("RQ: thumbnail created:", thumbnail_path)
+
+def delete_video_files(*, video_id, video_path):
+    # Originalvideo
+    if video_path and os.path.isfile(video_path):
+        os.remove(video_path)
+
+    # HLS
+    hls_dir = Path(settings.MEDIA_ROOT) / "hls" / str(video_id)
+    if hls_dir.exists():
+        shutil.rmtree(hls_dir)
+
+    # Thumbnail
+    thumb = (
+        Path(settings.MEDIA_ROOT)
+        / "thumbnail"
+        / f"image{video_id}.jpg"
+    )
+    if thumb.exists():
+        thumb.unlink()

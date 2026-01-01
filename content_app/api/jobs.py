@@ -2,6 +2,7 @@ from pathlib import Path
 from django.conf import settings
 from ..models import Video
 from .tasks import convert_to_hls
+from .tasks import delete_video_files
 from .tasks import generate_thumbnail
 from urllib.parse import urljoin
 
@@ -48,3 +49,10 @@ def create_master_playlist(base_dir):
 1080p/index.m3u8
 """
     (master_dir / "index.m3u8").write_text(content)
+
+
+def video_cleanup_job(video_id, video_path):
+    delete_video_files(
+        video_id=video_id,
+        video_path=video_path,
+    )
