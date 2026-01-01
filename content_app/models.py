@@ -1,6 +1,14 @@
 from django.db import models
 
 
+"""
+    Category choices for video classification.
+
+    Defines a set of possible categories that a video can belong to,
+    including genres like Drama, Comedy, Action, Romance, Horror,
+    Science Fiction, and others.
+"""
+
 CATEGORY_CHOICES = {
     ("drama", "Drama"),
     ("romance", "Romance"),

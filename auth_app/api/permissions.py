@@ -8,6 +8,7 @@ class IsOwner(permissions.BasePermission):
     """
     "Allows access only for the owner of an object."
     """
+
     def has_object_permission(self, request, view, obj):
 
         return obj.owner == request.user
@@ -19,6 +20,7 @@ class CookieJWTAuthentication(authentication.BaseAuthentication):
     token from the access_token cookie, validating it with SimpleJWT
     and returning the associated user for protected API requests."
     """
+
     cookie_name = "access_token"
 
     def authenticate(self, request):

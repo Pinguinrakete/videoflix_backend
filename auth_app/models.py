@@ -17,6 +17,7 @@ class CustomUserManager(BaseUserManager):
         Creates and saves a regular user with the given email and password.
         By default, the user is inactive (is_active=False).
         """
+
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
@@ -29,6 +30,7 @@ class CustomUserManager(BaseUserManager):
         """
         Creates a superuser with active status and admin privileges.
         """
+
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
@@ -54,6 +56,15 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+    Custom user model that uses email as the unique identifier.
+
+    Extends Django's authentication system to replace the username
+    with an email address, includes account status and verification
+    fields, and provides a helper method to check the validity of
+    time-limited verification tokens.
+    """
+
     email = models.EmailField(_("email address"), unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)

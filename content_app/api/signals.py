@@ -9,6 +9,13 @@ from ..models import Video
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
+    """
+    Post-save signal handler for Video instances.
+
+    Automatically enqueues the video processing pipeline when a new
+    video is created and a video file is present.
+    """
+
     if not created or not instance.video:
         return
 
@@ -18,6 +25,14 @@ def video_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Video)
 def video_post_delete(sender, instance, **kwargs):
+    """
+    Post-delete signal handler for Video instances.
+
+    Automatically enqueues a cleanup job to remove all files
+    associated with the deleted video, including the source file
+    and generated streaming assets.
+    """
+
     queue = django_rq.get_queue("default")
 
     queue.enqueue(

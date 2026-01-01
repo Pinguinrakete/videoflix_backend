@@ -8,6 +8,15 @@ from urllib.parse import urljoin
 
 
 def video_processing_pipeline(video_id):
+    """
+    Process a video for streaming and preview generation.
+
+    Retrieves the video by its ID, converts the source file into
+    multiple HLS resolutions, generates a master playlist, creates
+    a thumbnail image, and updates the video record with the
+    thumbnail URL.
+    """
+
     video = Video.objects.get(id=video_id)
     source = video.video.path
 
@@ -34,6 +43,14 @@ def video_processing_pipeline(video_id):
 
 
 def create_master_playlist(base_dir):
+    """
+    Create an HLS master playlist.
+
+    Generates a master `index.m3u8` file that references multiple
+    resolution-specific HLS playlists (480p, 720p, 1080p) and stores
+    it in the master directory.
+    """
+
     master_dir = base_dir / "master"
     master_dir.mkdir(exist_ok=True)
     content = """#EXTM3U
@@ -52,6 +69,14 @@ def create_master_playlist(base_dir):
 
 
 def video_cleanup_job(video_id, video_path):
+    """
+    Clean up video-related files.
+
+    Removes all stored files associated with the given video,
+    including the original source file and any generated
+    streaming assets.
+    """
+
     delete_video_files(
         video_id=video_id,
         video_path=video_path,

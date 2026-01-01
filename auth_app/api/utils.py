@@ -4,6 +4,7 @@ from django.core.mail import EmailMultiAlternatives
 
 def send_activation_email(user_email, activation_url):
     """Send an account activation email to the user."""
+
     html_content = f"""
         <div style="width:500px; font-size:18px; font-family:Arial, Helvetica, sans-serif">    
             <p>Dear videoflix user,<br><br>
@@ -31,6 +32,7 @@ def send_activation_email(user_email, activation_url):
 
 def send_reset_password_email(user_email, reset_pw_url):
     """Send a password reset email to the user."""
+
     html_content = f"""
         <div style="width:500px; font-size:18px; font-family:Arial, Helvetica, sans-serif">    
             <p>Hello videoflix user,<br><br>

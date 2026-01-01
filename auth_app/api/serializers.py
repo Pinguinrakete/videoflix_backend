@@ -5,6 +5,14 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating a new user account.
+
+    Validates the email and password fields, ensures that the password
+    and confirmed_password match,
+    and creates a new user with a hashed password.
+    """
+
     confirmed_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
@@ -36,6 +44,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class CookieTokenObtainPairSerializer(serializers.Serializer):
+    """
+    Serializer for authenticating a user via email and password.
+
+    Validates the provided credentials, checks that the user account
+    is active and the email address is verified, and returns the
+    authenticated user instance on success.
+    """
+
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True)
 
@@ -67,6 +83,15 @@ class CookieTokenObtainPairSerializer(serializers.Serializer):
 
 
 class PasswordResetSerializer(serializers.Serializer):
+    """
+    Serializer for initiating a password reset process.
+
+    Validates the provided email address and attempts to retrieve
+    the corresponding user. The user instance is stored for further
+    processing (e.g. sending a password reset email), even if the
+    email does not exist in the system.
+    """
+
     email = serializers.EmailField()
 
     def validate_email(self, value):
@@ -76,6 +101,13 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
+    """
+    Serializer for confirming a password reset.
+
+    Validates that the new password and confirmation password match
+    before allowing the password update to proceed.
+    """
+
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 

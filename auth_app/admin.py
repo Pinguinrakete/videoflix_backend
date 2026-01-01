@@ -6,6 +6,15 @@ from .models import CustomUser
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    """
+    Admin configuration for the CustomUser model.
+
+    Customizes the Django admin interface to manage users by email
+    instead of username, defines displayed and filterable fields,
+    configures permission management, and customizes the user
+    creation and edit forms.
+    """
+
     model = CustomUser
 
     list_display = (

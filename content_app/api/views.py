@@ -10,6 +10,13 @@ from .serializers import VideoSerializer
 
 
 class VideoView(APIView):
+    """
+    Retrieve a list of all videos.
+
+    Requires authentication via cookie-based JWT. Returns serialized
+    video metadata ordered by creation date in descending order.
+    """
+
     authentication_classes = [CookieJWTAuthentication]
 
     def get(self, request):
@@ -21,8 +28,11 @@ class VideoView(APIView):
 
 class HLSMasterPlaylistView(APIView):
     """
-    Returns the HLS master playlist (index.m3u8)
-    for a movie in a specific resolution.
+    Serve the HLS master playlist for a specific video and resolution.
+
+    Requires authentication via cookie-based JWT. Validates that the
+    requested video and resolution exist, and returns the corresponding
+    `index.m3u8` file for HLS streaming. Raises 404 if not found.
     """
 
     authentication_classes = [CookieJWTAuthentication]
@@ -50,8 +60,12 @@ class HLSMasterPlaylistView(APIView):
 
 class HLSVideoSegmentView(APIView):
     """
-    Returns a single HLS TS segment for a
-    video at a specific resolution.
+    Serve individual HLS video segments for streaming.
+
+    Requires authentication via cookie-based JWT. Validates that the
+    requested video exists, ensures the segment filename ends with
+    ".ts", and returns the corresponding video segment file. Raises
+    404 if the video or segment is not found.
     """
 
     authentication_classes = [CookieJWTAuthentication]

@@ -5,12 +5,13 @@ from .views import HLSVideoSegmentView
 
 
 """
-    URL routes for video streaming and HLS delivery API endpoints.
+    URL patterns for video streaming and management.
 
-    Includes endpoints for:
-    - General video access and metadata retrieval
-    - Serving HLS master playlists (.m3u8) for adaptive streaming
-    - Serving individual HLS video segments for playback
+    - "video/" → VideoView: Handles video listing and metadata.
+    - "video/<movie_id>/<resolution>/index.m3u8" → HLSMasterPlaylistView:
+      Serves the HLS master playlist for a specific video and resolution.
+    - "video/<movie_id>/<resolution>/<segment>/" → HLSVideoSegmentView:
+      Serves individual HLS video segments for streaming.
 """
 
 urlpatterns = [

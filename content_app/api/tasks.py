@@ -51,6 +51,14 @@ def convert_to_hls(source, output_dir, resolution):
 
 
 def generate_thumbnail(video_path, thumbnail_path, size=(270, 150)):
+    """
+    Generate a thumbnail image from a video file.
+
+    Extracts a single frame from the video (at 1 second), resizes it
+    to the specified dimensions, converts it to JPEG format, and
+    saves it to the given path with proper file permissions.
+    """
+
     video_path = str(video_path)
     thumbnail_path = Path(thumbnail_path)
 
@@ -78,16 +86,21 @@ def generate_thumbnail(video_path, thumbnail_path, size=(270, 150)):
 
 
 def delete_video_files(*, video_id, video_path):
-    # Originalvideo
+    """
+    Delete all files associated with a video.
+
+    Removes the original video file, any generated HLS streaming
+    directories, and the thumbnail image corresponding to the given
+    video ID.
+    """
+
     if video_path and os.path.isfile(video_path):
         os.remove(video_path)
 
-    # HLS
     hls_dir = Path(settings.MEDIA_ROOT) / "hls" / str(video_id)
     if hls_dir.exists():
         shutil.rmtree(hls_dir)
 
-    # Thumbnail
     thumb = (
         Path(settings.MEDIA_ROOT)
         / "thumbnail"

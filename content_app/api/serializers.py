@@ -3,6 +3,13 @@ from ..models import Video
 
 
 class VideoSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Video model.
+
+    Serializes basic video metadata including title, description,
+    category, creation timestamp, and the associated thumbnail URL.
+    """
+    
     class Meta:
         model = Video
         fields = ["id",
