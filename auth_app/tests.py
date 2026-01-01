@@ -15,6 +15,14 @@ from .models import CustomUser
 
 
 class CustomUserModelTest(TestCase):
+    """
+    Test suite for the CustomUser model.
+
+    Verifies that standard users and superusers are created correctly,
+    checks the validity of authentication tokens, and ensures
+    the string representation of the user is correct.
+    """
+
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             email="test@example.com",
@@ -50,6 +58,14 @@ class CustomUserModelTest(TestCase):
 
 
 class RegisterSerializerTest(TestCase):
+    """
+    Test suite for the RegisterSerializer.
+
+    Verifies that user registration works correctly with valid data,
+    checks for password mismatch errors, and ensures duplicate
+    emails are not allowed.
+    """
+
     def test_valid_data(self):
         data = {
             "email": "newuser@example.com",
@@ -88,6 +104,13 @@ class RegisterSerializerTest(TestCase):
 
 
 class RegisterViewTest(APITestCase):
+    """
+    Test suite for the RegisterView API endpoint.
+
+    Verifies that a user can be successfully registered through the API,
+    and that the user is properly created in the database.
+    """
+
     def test_register_user(self):
         url = reverse("auth_app:register")
         data = {
@@ -103,6 +126,13 @@ class RegisterViewTest(APITestCase):
 
 
 class ActivationViewTest(APITestCase):
+    """
+    Test suite for the ActivationView API endpoint.
+
+    Verifies that a user can activate their account using a valid UID and token,
+    and that invalid tokens are correctly rejected.
+    """
+
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             email="activate@example.com",
@@ -132,6 +162,13 @@ class ActivationViewTest(APITestCase):
 
 
 class UtilsEmailTest(TestCase):
+    """
+    Test suite for email utility functions.
+
+    Verifies that activation and password reset emails
+    are sent correctly using the email utility functions.
+    """
+
     @patch("django.core.mail.EmailMultiAlternatives.send")
     def test_send_activation_email(self, mock_send):
         send_activation_email("test@example.com", "http://activation-link")
