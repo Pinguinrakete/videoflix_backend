@@ -4,8 +4,6 @@ LABEL maintainer="mihai@developerakademie.com"
 LABEL version="1.0"
 LABEL description="Python 3.14.0a7 Alpine 3.21"
 
-WORKDIR /app
-
 COPY . .
 
 RUN apk update && \

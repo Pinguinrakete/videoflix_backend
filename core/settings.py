@@ -18,7 +18,8 @@ from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = "/media"
 MEDIA_URL = "/media/"
 # SITE_URL = "http://example.com" or Developer mode
 SITE_URL = "http://127.0.0.1:8000"

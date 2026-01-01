@@ -48,24 +48,33 @@ def convert_to_hls(source, output_dir, resolution):
 
 
 def generate_thumbnail(video_path, thumbnail_path, size=(270, 150)):
-    temp_frame = Path(thumbnail_path).with_suffix(".tmp.jpg")
+    video_path = str(video_path)
+    thumbnail_path = Path(thumbnail_path)
+
+    print("RQ: generating thumbnail")
+    print("Source:", video_path)
+    print("Target:", thumbnail_path)
 
     subprocess.run(
         [
-            "ffmpeg",
+            "/usr/bin/ffmpeg",
+            "-y",
             "-i", video_path,
             "-ss", "00:00:01",
             "-vframes", "1",
-            str(temp_frame)
+            str(thumbnail_path),
         ],
         check=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
     )
 
-    with Image.open(temp_frame) as img:
+    if not thumbnail_path.exists():
+        raise RuntimeError("Thumbnail frame was not created")
+
+    with Image.open(thumbnail_path) as img:
         img = img.convert("RGB")
         img.thumbnail(size)
         img.save(thumbnail_path, "JPEG", quality=85, optimize=True)
 
-    temp_frame.unlink(missing_ok=True)
+    thumbnail_path.chmod(0o644)
+
+    print("RQ: thumbnail created:", thumbnail_path)

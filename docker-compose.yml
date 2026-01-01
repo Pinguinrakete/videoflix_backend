@@ -1,18 +1,18 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:16
     container_name: videoflix_database
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   redis:
-    image: redis:latest
+    image: redis:7
     container_name: videoflix_redis
     volumes:
       - redis_data:/data
@@ -23,20 +23,19 @@ services:
     build:
       context: .
       dockerfile: backend.Dockerfile
-    env_file: .env
     container_name: videoflix_backend
     command: ./backend.entrypoint.sh
+    env_file: .env
+    environment:
+      PYTHONUNBUFFERED: 1
+      DJANGO_CONTAINER_ROLE: web
+      RUN_MIGRATIONS: "true"
+      RUN_WORKER: "false"
     volumes:
-      - .:/app
-      - ./media:/app/media
-      - ./static:/app/static
+      - ./media:/media
+      - ./static:/static
     ports:
       - "8000:8000"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DJANGO_CONTAINER_ROLE=web
-      - RUN_MIGRATIONS=true
-      - RUN_WORKER=false    
     depends_on:
       - db
       - redis
@@ -48,21 +47,18 @@ services:
     container_name: videoflix_rqworker
     command: ./backend.entrypoint.sh
     env_file: .env
-    volumes:
-      - .:/app
-      - ./media:/app/media
-      - ./static:/app/static
     environment:
-      - PYTHONUNBUFFERED=1
-      - DJANGO_CONTAINER_ROLE=rqworker
-      - RUN_MIGRATIONS=false
-      - RUN_WORKER=true
+      PYTHONUNBUFFERED: 1
+      DJANGO_CONTAINER_ROLE: rqworker
+      RUN_MIGRATIONS: "false"
+      RUN_WORKER: "true"
+    volumes:
+      - ./media:/media
+      - ./static:/static
     depends_on:
-      - web
       - redis
+      - web
 
 volumes:
   postgres_data:
   redis_data:
-  videoflix_media:
-  videoflix_static:
