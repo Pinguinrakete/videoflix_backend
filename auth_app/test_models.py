@@ -1,5 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError
+# from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -129,7 +129,8 @@ class ActivationViewTest(APITestCase):
     """
     Test suite for the ActivationView API endpoint.
 
-    Verifies that a user can activate their account using a valid UID and token,
+    Verifies that a user can activate their account
+    using a valid UID and token,
     and that invalid tokens are correctly rejected.
     """
 
