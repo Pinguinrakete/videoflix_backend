@@ -1,20 +1,34 @@
 FROM python:3.12-alpine
 
-LABEL maintainer="mihai@developerakademie.com"
+LABEL maintainer="xyz@ie.com"
 LABEL version="1.0"
-LABEL description="Python 3.14.0a7 Alpine 3.21"
+LABEL description="Python 3.12 Alpine"
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apk update && \
+    apk add --no-cache \
+        bash \
+        postgresql-client \
+        ffmpeg \
+        gcc \
+        musl-dev \
+        postgresql-dev
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+RUN apk del gcc musl-dev postgresql-dev
 
 COPY . .
 
-RUN apk update && \
-    apk add --no-cache --upgrade bash && \
-    apk add --no-cache postgresql-client ffmpeg && \
-    apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    apk del .build-deps && \
-    chmod +x backend.entrypoint.sh
+RUN chmod +x backend.entrypoint.sh
 
 EXPOSE 8000
 
-ENTRYPOINT [ "./backend.entrypoint.sh" ]
+ENTRYPOINT ["./backend.entrypoint.sh"]

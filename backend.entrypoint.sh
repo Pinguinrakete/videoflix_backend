@@ -45,5 +45,8 @@ fi
 # Gunicorn nur starten, wenn nicht Worker
 if [ "$RUN_WORKER" != "true" ]; then
   echo "Starte Gunicorn..."
-  exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --reload
+  exec gunicorn core.wsgi:application \
+       --bind 0.0.0.0:8000 \
+       --workers 3 \
+       --timeout 60
 fi
