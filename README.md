@@ -12,6 +12,8 @@ The backend runs in Docker containers and uses PostgreSQL as the database. FFMPE
 
 A caching layer based on django-redis improves performance, configuration is managed securely via dotenv, static files are served using WhiteNoise, and in production the application runs efficiently with Gunicorn.
 
+Frontend repository: [Videoflix Frontend](https://github.com/Pinguinrakete/videoflix_fontend)
+
 
 ## ![Features Icon](assets/icons/gear.png) Features
 
@@ -33,12 +35,13 @@ A caching layer based on django-redis improves performance, configuration is man
 
 
 ## ![Tech Stack Icon](assets/icons/stack.png) Tech Stack
-    • Python 3.11
-    • Django 5.2.8
-    • Django REST Framework 3.16.1
-    • FFMPEG - Video encoder
-    • JWT-Authentifizierung  |    Secure login with JSON Web Tokens
-    • PosgreSQL              |    Database
+• Python 3.11  
+• Django 5.2.8  
+• Django REST Framework 3.16.1  
+• Docker and Docker Compose  
+• FFMPEG - Video encoder  
+• JWT-Authentifizierung  |    Secure login with JSON Web Tokens  
+• PosgreSQL              |    Database  
 
 
 ## ![Tech Stack Icon](assets/icons/folder.png) Project Structure
@@ -55,7 +58,7 @@ VIDEOFLIX-BACKEND/
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&emsp;&emsp;&emsp;├── serializers.py  &emsp;&emsp;&emsp;&nbsp;&emsp;# validates, converts, and represents data  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&emsp;&emsp;&emsp;├── urls.py &nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# API URL routes for authentication  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&emsp;&emsp;&emsp;└──  views.py  &nbsp;&nbsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;#  Complete JWT-based auth workflow  
-&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;└── tests.py &emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Tests for authentication functionality   
+&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;└── test_models.py &emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Tests for authentication functionality   
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;├── core/  &nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Main project configuration module  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;├── settings.py  &nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Django project settings (config, installed apps, etc.)  
@@ -69,10 +72,10 @@ VIDEOFLIX-BACKEND/
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&emsp;&emsp;&emsp;├── tasks.py &emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# FFmpeg video resolution conversion functions  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&emsp;&emsp;&emsp;├── urls.py  &nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# API URL routes for quiz features  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&emsp;&emsp;&emsp;└──  views.py   &nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;# Authenticated DRF HLS video streaming    
-&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;├── admin.py   &nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;# Admin panel configuration for video model 
-&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;├── apps.py  &nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Django app configuration  
+&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;├── admin.py   &nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;# Admin panel configuration for video model  
+&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;├── apps.py  &nbsp;&nbsp;&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&emsp;# Django app configuration  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;├── models.py     &nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Database models for videos  
-&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;└── tests.py    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Tests for video functionality  
+&emsp;&emsp;&nbsp;&emsp;&nbsp;│   &emsp;&emsp;&nbsp;&nbsp;└── test_models.py    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Tests for video functionality  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;│  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;├── env.template   &emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&emsp;# Template file for environment variables  
 &emsp;&emsp;&nbsp;&emsp;&nbsp;├── backend.Dockerfile  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;# Builds Python app with dependencies, entrypoint   
@@ -105,7 +108,11 @@ sudo apt install ffmpeg
 ```bash
 brew install ffmpeg 
 ```
-### 3. Clone the repository:
+
+### 3. Docker and Docker Compose  
+Installed from https://docs.docker.com/get-started/get-docker/<br>
+
+### 4. Clone the repository:
 ```bash
 create a folder "videoflix_backend"
 open the folder in VSCode
@@ -113,7 +120,7 @@ open the console
 git clone https://github.com:Pinguinrakete/videoflix_backend.git .
 ```   
 
-### 4. Create a virtual environment to locally isolate our package dependencies and activate it.
+### 5. Create a virtual environment to locally isolate our package dependencies and activate it.
 ### Windows 10/11
 ```bash
 py -3.11 -m venv env   
@@ -131,27 +138,10 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt 
 ``` 
 
-### 7. Please rename the .env.template to .env and set all necessary environment variables.
-### Variables That Must Be Set:
-&nbsp;&nbsp;&nbsp;•&nbsp;Insert the API key from step 6 into GEMINI_API_KEY=your_gemini_api_key  
-&nbsp;&nbsp;&nbsp;•&nbsp;Next, generate a SECRET_KEY (see the lines below for Windows 10/11 or Linux/macOS)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and replace SECRET_KEY_PLACEHOLDER with your generated value.
-## 
-### Windows 10/11
-```bash
-Generate a SCRET_KEY, please open the PowerShell:
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-```
-### LINUX / MAC OS 
-```bash
-Generate a SCRET_KEY, please open the bash:
-python3 -c 'import secrets, string; chars="abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"; print("".join(secrets.choice(chars) for _ in range(50)))'
-```
-### 8. Migrations are applied to the database.
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
+
+
+
+
 ### 9. Create a Admin User.
 ```bash
 python manage.py createsuperuser
