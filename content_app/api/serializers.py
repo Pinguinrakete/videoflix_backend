@@ -9,7 +9,7 @@ class VideoSerializer(serializers.ModelSerializer):
     Serializes basic video metadata including title, description,
     category, creation timestamp, and the associated thumbnail URL.
     """
-    
+
     class Meta:
         model = Video
         fields = ["id",
