@@ -117,7 +117,7 @@ Installed from https://docs.docker.com/get-started/get-docker/<br>
 create a folder "videoflix_backend"
 open the folder in VSCode
 open the console
-git clone https://github.com:Pinguinrakete/videoflix_backend.git .
+git clone https://github.com/Pinguinrakete/videoflix_backend.git .
 ```   
 
 ### 5. Generate a secret key
