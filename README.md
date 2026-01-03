@@ -120,7 +120,25 @@ open the console
 git clone https://github.com/Pinguinrakete/videoflix_backend.git .
 ```   
 
-### 5. Generate a secret key
+### 5. Create a virtual environment to locally isolate our package dependencies and activate it.
+### Windows 10/11
+```bash
+py -3.11 -m venv env   
+.\env\Scripts\activate
+``` 
+### LINUX / MAC OS 
+```bash
+sudo apt install python3.11-venv
+python3.11 -m venv env
+source env/bin/activate
+```  
+### 6. Install dependencies
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt 
+``` 
+
+### 7. Generate a secret key
 ### Windows 10/11
 ```bash
 Generate a SCRET_KEY, please open the PowerShell:
@@ -131,13 +149,13 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 Generate a SCRET_KEY, please open the bash:
 python3 -c 'import secrets, string; chars="abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"; print("".join(secrets.choice(chars) for _ in range(50)))'
 ```
-### 5. Configure the .env file
+### 8. Configure the .env file
 
 Please rename the file .env.template to .env and adjust all necessary environment variables.   
 The Secret Key from step 5 should be entered here.  
 The admin user will be created automatically when the container is built, based on the values defined in the .env file.
 
-### 6. Starting the Docker container
+### 9. Starting the Docker container
 First, build and start the Docker container.
 ```bash
 docker-compose up --build
@@ -151,7 +169,7 @@ Remove all containers if needed
 docker-compose down -v 
 ```
 
-### 7. Access to Backend and Admin Panel
+### 10. Access to Backend and Admin Panel
 You can reach the backend at http://127.0.0.1:8000/ and the admin panel at http://127.0.0.1:8000/admin
 
 ## ![API Endpoints Icon](assets/icons//api.png) API Endpoint Documentation
@@ -175,5 +193,5 @@ You can reach the backend at http://127.0.0.1:8000/ and the admin panel at http:
 | GET    |`/api/video/<int:movie_id>/<str:resolution>/<str:segment>/`| Returns a single HLS video segment for a selected film and resolution |
 
 
-### ![Quiz Icon](assets/icons/quiz.png) 8. License
+### ![Quiz Icon](assets/icons/quiz.png) 11. License
 The license is under the MIT License.
