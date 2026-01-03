@@ -2,18 +2,15 @@
 
 set -e
 
-echo "Warte auf PostgreSQL auf $DB_HOST:$DB_PORT..."
-
+echo "Waiting for PostgreSQL to start $DB_HOST:$DB_PORT..."
 while ! pg_isready -h "$DB_HOST" -p "$DB_PORT" -q; do
-  echo "PostgreSQL ist nicht erreichbar - schlafe 1 Sekunde"
+  echo "PostgreSQL is not reachable – sleeping for 1 second"
   sleep 1
 done
+echo "PostgreSQL is ready – continuing..."
 
-echo "PostgreSQL ist bereit - fahre fort..."
-
-# Migrationen nur ausführen, wenn RUN_MIGRATIONS=true
 if [ "$RUN_MIGRATIONS" = "true" ]; then
-  echo "Führe Django-Collectstatic, Migrations und Superuser-Erstellung aus..."
+  echo "Running Django collectstatic, migrations, and superuser creation..."
 
   python manage.py collectstatic --noinput
   python manage.py makemigrations
@@ -36,15 +33,25 @@ else:
 EOF
 fi
 
-# RQ-Worker nur starten, wenn RUN_WORKER=true
 if [ "$RUN_WORKER" = "true" ]; then
-  echo "Starte RQ-Worker..."
+  echo "Waiting for Redis $REDIS_LOCATION..."
+
+  # Extrahiere Host und Port aus REDIS_LOCATION
+  REDIS_HOST=$(echo $REDIS_LOCATION | sed -E 's#redis://([^:]+):([0-9]+)/[0-9]+#\1#')
+  REDIS_PORT=$(echo $REDIS_LOCATION | sed -E 's#redis://([^:]+):([0-9]+)/[0-9]+#\2#')
+
+  while ! nc -z "$REDIS_HOST" "$REDIS_PORT"; do
+    echo "Redis is not reachable – sleeping for 1 second"
+    sleep 1
+  done
+
+  echo "Redis is ready!"
+  echo "Starting RQ-Worker..."
   exec python manage.py rqworker default
 fi
 
-# Gunicorn nur starten, wenn nicht Worker
 if [ "$RUN_WORKER" != "true" ]; then
-  echo "Starte Gunicorn..."
+  echo "Starting Gunicorn..."
   exec gunicorn core.wsgi:application \
        --bind 0.0.0.0:8000 \
        --workers 3 \
