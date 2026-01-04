@@ -3,7 +3,6 @@ from ..models import Video
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    thumbnail_url = serializers.CharField(read_only=True)
     """
     Serializer for the Video model.
 
