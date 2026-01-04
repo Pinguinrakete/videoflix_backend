@@ -13,9 +13,10 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
   echo "Running Django collectstatic, migrations, and superuser creation..."
 
   python manage.py collectstatic --noinput
+  python manage.py makemigrations auth_app
+  python manage.py migrate auth_app
   python manage.py makemigrations
   python manage.py migrate
-  sleep 3
   python manage.py shell <<EOF
 import os
 from django.contrib.auth import get_user_model
