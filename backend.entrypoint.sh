@@ -15,7 +15,7 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
   python manage.py collectstatic --noinput
   python manage.py makemigrations
   python manage.py migrate
-
+  sleep 3
   python manage.py shell <<EOF
 import os
 from django.contrib.auth import get_user_model
@@ -36,7 +36,6 @@ fi
 if [ "$RUN_WORKER" = "true" ]; then
   echo "Waiting for Redis $REDIS_LOCATION..."
 
-  # Extrahiere Host und Port aus REDIS_LOCATION
   REDIS_HOST=$(echo $REDIS_LOCATION | sed -E 's#redis://([^:]+):([0-9]+)/[0-9]+#\1#')
   REDIS_PORT=$(echo $REDIS_LOCATION | sed -E 's#redis://([^:]+):([0-9]+)/[0-9]+#\2#')
 
