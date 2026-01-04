@@ -138,13 +138,13 @@ pip install Django==5.2.8
 
 ### 6. Generate a secret key
 ### Windows 10/11
-```bash
 Generate a SCRET_KEY, please open the PowerShell:
+```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 ### LINUX / MAC OS 
-```bash
 Generate a SCRET_KEY, please open the bash:
+```bash
 python3 -c 'import secrets, string; chars="abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"; print("".join(secrets.choice(chars) for _ in range(50)))'
 ```
 ### 7. Configure the .env file
