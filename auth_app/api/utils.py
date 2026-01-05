@@ -1,13 +1,18 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
+from pathlib import Path
 
 
 def send_activation_email(user_email, activation_url):
     """Send an account activation email to the user."""
 
     html_content = f"""
-        <div style="width:500px; font-size:18px; font-family:Arial, Helvetica, sans-serif">    
-            <p>Dear videoflix user,<br><br>
+        <div style="width:500px; font-size:18px; font-family:Arial, Helvetica, sans-serif"; text-align:center;>
+
+            <img src="cid:videoflix_logo" alt="Videoflix Logo" style="max-width:200px; margin-bottom:20px;" />
+
+            <p style="font-size:18px;">Dear videoflix user,<br><br>
             Thank you for registering with <span style="color:blue;">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
 
             <a href="{activation_url}" style="text-decoration:none;"><b>https://videoflix.de/site/registerConfirm</b></a>
@@ -27,6 +32,15 @@ def send_activation_email(user_email, activation_url):
         to=[user_email],
     )
     email.attach_alternative(html_content, "text/html")
+
+    image_path = Path(settings.BASE_DIR) / "assets/image/videoflix.png"
+
+    with open(image_path, "rb") as img:
+        mime_image = MIMEImage(img.read())
+        mime_image.add_header("Content-ID", "<videoflix_logo>")
+        mime_image.add_header("Content-Disposition", "inline", filename="videoflix.png")
+        email.attach(mime_image)
+
     email.send()
 
 

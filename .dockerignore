@@ -1,32 +1,75 @@
-# This file is used to specify files and directories that should be ignored by Docker when building images.
-# It is similar to .gitignore but specific to Docker.
-*.pyc
+# =========================
+# Git & VCS
+# =========================
+.git
+.gitignore
+
+# =========================
+# Python / Django
+# =========================
+__pycache__/
+*.py[cod]
 *.pyo
+*.egg-info/
 *.mo
+*.log
 *.db
-*.css.map
-*.egg-info
-*.sql.gz
-.cache
-.project
-.idea
-.pydevproject
-.idea/workspace.xml
-.DS_Store
-.git/
-.sass-cache
-.vagrant/
-__pycache__
-dist
-docs
-env
-venv
-logs
-src/{{ project_name }}/settings/local.py
-src/node_modules
-web/media
-web/static/CACHE
-stats
-Dockerfile
-.env
 db.sqlite3
+
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+
+# Django generated files
+media/
+static/
+staticfiles/
+web/media/
+web/static/
+web/static/CACHE/
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+src/node_modules/
+
+# =========================
+# Caches & tooling
+# =========================
+.cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+stats/
+
+# =========================
+# IDEs & OS
+# =========================
+.idea/
+.idea/workspace.xml
+.project
+.pydevproject
+.DS_Store
+
+# =========================
+# Build / distribution
+# =========================
+dist/
+build/
+docs/
+*.sql.gz
+
+# =========================
+# Logs
+# =========================
+logs/
+
+# =========================
+# Docker / Compose
+# =========================
+docker-compose.yml
+Dockerfile
+*.Dockerfile
