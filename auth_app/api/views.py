@@ -44,7 +44,7 @@ class RegisterView(APIView):
             activation_token = default_token_generator.make_token(user)
 
             activation_url = (
-                f'http://127.0.0.1:5500/pages/auth/activate.html'
+                f'{settings.FRONTEND_BASE_URL}/pages/auth/activate.html'
                 f'?uid={uid}&token={activation_token}'
             )
 
@@ -269,7 +269,7 @@ class PasswordResetView(APIView):
             reset_token = default_token_generator.make_token(user)
 
             reset_pw_url = (
-                f'http://127.0.0.1:5500/pages/auth/confirm_password.html'
+                f'{settings.FRONTEND_BASE_URL}/pages/auth/confirm_password.html'
                 f'?uid={uid}&token={reset_token}'
             )
 
