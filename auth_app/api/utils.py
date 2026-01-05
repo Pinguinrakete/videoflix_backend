@@ -10,7 +10,13 @@ def send_activation_email(user_email, activation_url):
     html_content = f"""
         <div style="width:500px; font-size:18px; font-family:Arial, Helvetica, sans-serif"; text-align:center;>
 
-            <img src="cid:videoflix_logo" alt="Videoflix Logo" style="max-width:200px; margin-bottom:20px;" />
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td align="center">
+                        <img src="cid:videoflix_logo" alt="Videoflix Logo" style="max-width:200px; margin-top: 18px; display:block;" />
+                    </td>
+                </tr>
+            </table>
 
             <p style="font-size:18px;">Dear videoflix user,<br><br>
             Thank you for registering with <span style="color:blue;">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
@@ -61,6 +67,8 @@ def send_reset_password_email(user_email, reset_pw_url):
             <p>Best regards,</p>
 
             <p>Your Videoflix Team</p>
+
+            <img src="cid:videoflix_logo" alt="Videoflix Logo" style="max-width:200px; display:block; margin:0 auto;" />
         </div>
     """
 

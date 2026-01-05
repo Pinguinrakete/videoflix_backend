@@ -21,6 +21,7 @@ MEDIA_ROOT = "/media"
 MEDIA_URL = "/media/"
 # SITE_URL = "http://example.com" or Developer mode
 SITE_URL = "http://127.0.0.1:8000"
+FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:5500")
 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
