@@ -19,7 +19,6 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = "/media"
 MEDIA_URL = "/media/"
-# SITE_URL = "http://example.com" or Developer mode
 SITE_URL = "http://127.0.0.1:8000"
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:5500")
 
@@ -157,6 +156,7 @@ RQ_QUEUES = {
         'DB': os.environ.get("REDIS_DB", default=0),
         'DEFAULT_TIMEOUT': 900,
         'REDIS_CLIENT_KWARGS': {},
+        'ASYNC': True,
     },
 }
 
@@ -207,6 +207,9 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
